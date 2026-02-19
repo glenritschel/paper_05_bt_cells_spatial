@@ -1,0 +1,28 @@
+# Core scientific stack
+numpy>=1.26
+scipy>=1.11
+pandas>=2.1
+
+# Single-cell / spatial
+anndata>=0.10
+scanpy>=1.10
+squidpy>=1.6
+spatialdata>=0.2  # squidpy dependency in many setups
+
+# Plotting
+matplotlib>=3.8
+
+# I/O and utilities
+h5py>=3.10
+pyarrow>=15.0
+tqdm>=4.66
+requests>=2.31
+
+# GEO helpers (optional but supported)
+GEOparse>=2.0.4
+beautifulsoup4>=4.12
+lxml>=5.1
+
+# Notebook
+jupyter>=1.0
+ipykernel>=6.29
