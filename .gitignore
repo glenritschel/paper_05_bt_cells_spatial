@@ -5,9 +5,31 @@ __pycache__/
 *.pyd
 *.so
 *.egg-info/
-.venv/
+dist/
+build/
+.coverage
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 .ipynb_checkpoints/
 
-# Data
-data/raw/
-data/processed/
+# Environments
+.venv/
+.env/
+*.conda
+.envrc
+
+# Data & outputs
+data/raw/**
+data/interim/**
+data/processed/**
+reports/figures/**
+!data/**/.gitkeep
+!reports/figures/.gitkeep
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

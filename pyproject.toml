@@ -1,0 +1,5 @@
+[project]
+name = "paper05-bt-spatial"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "Paper 05 — SSc skin spatial transcriptomics (GSE249279) pipeline"
