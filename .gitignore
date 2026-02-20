@@ -1,4 +1,6 @@
+############################
 # Python
+############################
 __pycache__/
 *.py[cod]
 *.pyo
@@ -14,22 +16,57 @@ htmlcov/
 .ruff_cache/
 .ipynb_checkpoints/
 
+############################
 # Environments
+############################
 .venv/
 .env/
 *.conda
 .envrc
 
-# Data & outputs
-data/raw/**
-data/interim/**
-data/processed/**
-reports/figures/**
+############################
+# Data (never version)
+############################
+data/raw/
+data/interim/
+data/processed/
 !data/**/.gitkeep
-!reports/figures/.gitkeep
 
-# OS/editor
+############################
+# Reports – ignore scratch
+############################
+# Ignore all generated CSVs
+reports/**/*.csv
+
+# Ignore all figures by default
+reports/figures/**
+
+# Keep curated, publication-ready figures
+!reports/figures/.gitkeep
+!reports/figures/core/**
+!reports/figures/composite/**
+
+############################
+# Submission artifacts – VERSION THESE
+############################
+# (Do NOT ignore these)
+# submission_figures/
+# submission_supplement/
+
+############################
+# Archives (generated bundles)
+############################
+*.zip
+
+############################
+# OS / Editor noise
+############################
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+############################
+# Windows metadata
+############################
+*Zone.Identifier

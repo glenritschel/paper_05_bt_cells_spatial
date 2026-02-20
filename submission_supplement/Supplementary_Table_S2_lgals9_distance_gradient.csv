@@ -1,0 +1,17 @@
+section,n_spots,lgals9_q,n_anchors,spearman_dist_vs_Tsupp,source_file,n_spots_used,immune_only,immune_q,anchor_mode,adjusted
+A,706.0,0.95,36,0.0118170277927171,lgals9_distance_effects.csv,,,,,
+A,,0.95,14,-0.1300865826710665,lgals9_distance_effects_immune_q085.csv,269.0,True,0.85,quantile(0.95),True
+A,,0.95,10,-0.273803057461819,lgals9_distance_effects_immune_q090.csv,190.0,True,0.9,quantile(0.95),True
+A,,0.95,6,-0.3162874373288505,lgals9_distance_effects_immune_q095.csv,102.0,True,0.95,quantile(0.95),True
+B,840.0,0.95,42,0.0740585282663672,lgals9_distance_effects.csv,,,,,
+B,,0.95,15,0.2200443022765986,lgals9_distance_effects_immune_q085.csv,297.0,True,0.85,quantile(0.95),True
+B,,0.95,11,0.1929845222632681,lgals9_distance_effects_immune_q090.csv,208.0,True,0.9,quantile(0.95),True
+B,,0.95,6,0.2542409280695781,lgals9_distance_effects_immune_q095.csv,114.0,True,0.95,quantile(0.95),True
+C,499.0,0.95,25,0.1404504539289751,lgals9_distance_effects.csv,,,,,
+C,,0.95,50,-0.0733532154667088,lgals9_distance_effects_immune_q085.csv,187.0,True,0.85,topk(50)_fallback_too_many_quantile,True
+C,,0.95,7,0.1031202791722746,lgals9_distance_effects_immune_q090.csv,129.0,True,0.9,quantile(0.95),True
+C,,0.95,50,0.1246609309487939,lgals9_distance_effects_immune_q095.csv,70.0,True,0.95,topk(50)_fallback_too_many_quantile,True
+D,624.0,0.95,624,,lgals9_distance_effects.csv,,,,,
+D,,0.95,50,-0.0398589627212643,lgals9_distance_effects_immune_q085.csv,242.0,True,0.85,topk(50)_fallback_too_many_quantile,True
+D,,0.95,50,-0.0269973378518966,lgals9_distance_effects_immune_q090.csv,173.0,True,0.9,topk(50)_fallback_too_many_quantile,True
+D,,0.95,50,-0.0583949112793834,lgals9_distance_effects_immune_q095.csv,91.0,True,0.95,topk(50)_fallback_too_many_quantile,True

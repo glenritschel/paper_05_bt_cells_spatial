@@ -4,6 +4,10 @@ from __future__ import annotations
 
 import argparse
 import tarfile
+import hashlib
+import time
+import json
+
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -11,12 +15,86 @@ from src.paper05.utils import read_yaml, ensure_dir, write_json
 
 VISIUM_MATRIX_HINTS = ["filtered_feature_bc_matrix.h5", "raw_feature_bc_matrix.h5", "matrix.mtx.gz"]
 
+
+def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        while True:
+            b = f.read(chunk_size)
+            if not b:
+                break
+            h.update(b)
+    return h.hexdigest()
+
+
+def stamp_write(stamp: Path, payload: dict) -> None:
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.write_text(json.dumps(payload, indent=2) + "\n")
+
+
+def stamp_ok(stamp: Path, expected: dict) -> bool:
+    if not stamp.exists():
+        return False
+    try:
+        got = json.loads(stamp.read_text())
+    except Exception:
+        return False
+    return got == expected
+
+
 def safe_extract(tar: tarfile.TarFile, path: Path) -> None:
     for member in tar.getmembers():
         member_path = path / member.name
         if not str(member_path.resolve()).startswith(str(path.resolve())):
             raise RuntimeError(f"Unsafe path in tar: {member.name}")
     tar.extractall(path)
+
+
+def extract_nested_archives(root: Path, force: bool = False) -> int:
+    """
+    Extract nested .tar, .tar.gz, .tgz files inside `root`
+    into sibling directories named <archive>.extracted
+
+    Returns number of archives extracted.
+    """
+    import tarfile
+
+    n_extracted = 0
+
+    for archive in sorted(root.rglob("*")):
+        if not archive.is_file():
+            continue
+
+        name = archive.name.lower()
+        if not (name.endswith(".tar") or name.endswith(".tar.gz") or name.endswith(".tgz")):
+            continue
+
+        outdir = archive.parent / f"{archive.name}.extracted"
+
+        # Skip if already extracted and non-empty
+        if outdir.exists() and any(outdir.rglob("*")):
+            continue
+
+        print(f"[info] Extracting nested archive {archive} -> {outdir}")
+        outdir.mkdir(parents=True, exist_ok=True)
+
+        arch_sha = sha256_file(archive)
+        stamp = outdir / ".extract.stamp.json"
+        expected = {"archive": str(archive), "sha256": arch_sha}
+
+        if (not force) and stamp_ok(stamp, expected):
+            continue
+
+        # extract...
+        stamp_write(stamp, expected)
+
+        with tarfile.open(archive, "r:*") as tar:
+            safe_extract(tar, outdir)
+
+        n_extracted += 1
+
+    return n_extracted
+
 
 def detect_visium_samples(root: Path) -> List[Dict[str, Any]]:
     samples: List[Dict[str, Any]] = []
@@ -57,6 +135,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/config.yaml")
     ap.add_argument("--skip-extract", action="store_true")
+    ap.add_argument("--force", action="store_true", help="Force re-extraction ignoring stamps")
     args = ap.parse_args()
 
     cfg = read_yaml(args.config)
@@ -64,10 +143,24 @@ def main() -> int:
     interim_dir = ensure_dir(cfg["paths"]["interim_dir"])
     tar_path = raw_dir / "GSE249279_RAW.tar"
 
+    raw_sha = sha256_file(tar_path)
+    outer_stamp = interim_dir / ".outer_extract.stamp.json"
+    outer_expected = {"tar": str(tar_path), "sha256": raw_sha}
+
     if not args.skip_extract:
-        print(f"[info] Extracting {tar_path} -> {interim_dir}")
-        with tarfile.open(tar_path, "r:*") as tar:
-            safe_extract(tar, interim_dir)
+        if (not args.force) and stamp_ok(outer_stamp, outer_expected):
+            print("[info] Outer tar already extracted (stamp match); skipping.")
+        else:
+            print(f"[info] Extracting {tar_path} -> {interim_dir}")
+            # optional: clear interim_dir except .gitkeep and extracted dirs
+            with tarfile.open(tar_path, "r:*") as tar:
+                safe_extract(tar, interim_dir)
+            stamp_write(outer_stamp, outer_expected)
+
+    nested = extract_nested_archives(interim_dir, force=args.force)
+    print(f"[info] Nested archives extracted: {nested}")
+
+    print(f"[info] Nested archives extracted: {nested}")
 
     n_files = sum(1 for p in interim_dir.rglob("*") if p.is_file())
     vis = detect_visium_samples(interim_dir)

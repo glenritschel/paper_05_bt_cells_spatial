@@ -1,0 +1,46 @@
+programs:
+  B_activation:
+    - CD83
+    - CD86
+    - CD40
+    - TNFRSF13B
+    - HLA-DRA
+    - HLA-DRB1
+    - CD74
+    - MS4A1
+    - CD79A
+    - CD79B
+
+  Th2:
+    - IL7R
+    - CCR4
+    - GATA3
+    - STAT6
+    - IL4R
+    - IL13RA1
+    - BATF
+    - MAF
+    - ICOS
+
+  Th17:
+    - CCR6
+    - RORC
+    - IL23R
+    - STAT3
+    - BATF
+    - IRF4
+    - IL17RA
+    - IL1R1
+    - IL7R
+
+  T_suppression_exhaustion:
+    - PDCD1
+    - CTLA4
+    - LAG3
+    - TIGIT
+    - HAVCR2
+    - TOX
+    - ENTPD1
+    - IKZF2
+    - PRDM1
+

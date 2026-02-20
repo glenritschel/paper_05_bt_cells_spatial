@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import scanpy as sc
+import squidpy as sq
 
 from src.paper05.utils import read_yaml, ensure_dir
 
@@ -16,14 +17,24 @@ def find_sample_dirs(indir: Path) -> list[Path]:
 def is_spaceranger_outs(d: Path) -> bool:
     return (d / "outs" / "spatial").is_dir() and (d / "outs" / "filtered_feature_bc_matrix.h5").exists()
 
+
 def load_one(sample_dir: Path) -> sc.AnnData:
     vis_path = sample_dir / "outs" if is_spaceranger_outs(sample_dir) else sample_dir
-    ad = sc.read_visium(path=str(vis_path))
+
+    # Squidpy loader (preferred; avoids Scanpy deprecation warning)
+    ad = sq.read.visium(path=str(vis_path))
+
+    # Fix duplicate gene symbols / ids
+    ad.var_names_make_unique()
+
+    # QC metrics
     sc.pp.calculate_qc_metrics(ad, inplace=True)
+
     ad.uns["gse"] = "GSE249279"
     ad.uns["sample_dir"] = str(sample_dir)
     ad.uns["visium_path"] = str(vis_path)
     return ad
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
